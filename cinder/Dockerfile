@@ -1,15 +1,15 @@
 # Cinder driver container for Dell EMC VNX and Unity
 # Using openstack-cinder-volume base image
-# Version 1.0.0
+# Version 1.1.0
 
-FROM registry.access.redhat.com/rhosp12/openstack-cinder-volume
+FROM registry.access.redhat.com/rhosp13-beta/openstack-cinder-volume
 
 MAINTAINER Dell EMC
-LABEL description="Red Hat OpenStack Platform 12.0 cinder-volume Dell EMC VNX and Unity" \
-      summary="Red Hat OpenStack Platform 12.0 cinder-volume Dell EMC VNX and Unity" \
-      name="rhosp12/openstack-cinder-volume-dellemc" \
+LABEL description="Red Hat OpenStack Platform 13.0 cinder-volume Dell EMC VNX and Unity" \
+      summary="Red Hat OpenStack Platform 13.0 cinder-volume Dell EMC VNX and Unity" \
+      name="rhosp13/openstack-cinder-volume-dellemc" \
       vendor="Dell EMC" \
-      version="1.0.0" \
+      version="1.1.0" \
       storops="0.5.8" \
       naviseccli="7.33.9.1.55"
 

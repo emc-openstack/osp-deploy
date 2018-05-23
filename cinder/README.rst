@@ -1,10 +1,10 @@
 
-Dell EMC VNX Cinder driver containerization with OSP12
+Dell EMC VNX Cinder driver containerization with OSP13
 ======================================================
 
 Overview
 --------
-Dell EMC VNX Cinder driver integrates with the RedHat OpenStack Platform since OSP 6. In OSP12, all Cinder services are able to run within containers.
+Dell EMC VNX Cinder driver integrates with the RedHat OpenStack Platform since OSP 6. In OSP13, all Cinder services are able to run within containers.
 This instruction provides detailed steps on how to enable the containerization of VNX Cinder driver on top of the OSP Cinder images.
 
 
@@ -17,15 +17,10 @@ The VNX container image contains following RPM packages:
 * python-retryz
 
 
-.. attention::
-
-  Cinder containerization is still in `technical preview only <https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/12/html/release_notes/containers>`_ for OSP12.
-
-
 Deployment prerequisites
 ------------------------
 
-* RedHat OpenStack Platform 12 with Cinder containerization (it is disabled by default).
+* RedHat OpenStack Platform 13.
 * VNX with Block version 5.32 or above.
 
 Deployment steps
@@ -33,55 +28,28 @@ Deployment steps
 
 Prepare Dell EMC container
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Before starting the deployment with VNX driver, User needs to build and push the Dell EMC container image into the local docker registry.
-There are 2 options to do it: 1) `From the Dockerfile`_, 2) `From the binary container image`_.
+The formal Dell EMC container image is published to `Red Hat Container Catalog <https://access.redhat.com/containers/>`_.
 
 .. attention::
 
-    in below examples, the 192.168.139.1:8787 acts as the local registry.
+  in below examples, 192.168.139.1:8787 acts as a local registry.
 
-From the Dockerfile
-^^^^^^^^^^^^^^^^^^^
-The recommended way is to build via a standalone `Dockerfile` if the overcloud is able to access the Internet.
-
-- First, download the `Dockerfile <./Dockerfile>`_ to the director, and build a local image:
+Frist, pull the container image from Red Hat Container Catalog.
 
 .. code-block:: bash
 
-  $ docker build -t 192.168.139.1:8787/rhosp12/openstack-cinder-volume-dellemc .
+  $ docker pull registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc
 
-Above command will fetch and install all the VNX dependencies from Dell EMC repos.
-
-- Then, push the image to the local docker registry.
+Then, tag and push it to the local docker registry if needed.
 
 .. code-block:: bash
 
-  $ docker push 192.168.139.1:8787/rhosp12/openstack-cinder-volume-dellemc
-
-
-From the binary container image
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-- First, download the binary `dellemc-container.tar <https://github.com/emc-openstack/osp-deploy/releases/download/0.0.1/dellemc-container.tar>`_ to the director,
-
-.. code-block:: bash
-
-  $ docker load -i ./dellemc-container.tar
-  Loaded image ID: sha256:<IMAGE ID>
-
-This returns an **<IMAGE ID>** for later use.
-
-- Then, tag and push it to the local docker registry.
-
-.. code-block:: bash
-
-  $ docker tag <IMAGE ID> 192.168.139.1:8787/rhosp12/openstack-cinder-volume-dellemc
-  $ docker push 192.168.139.1:8787/rhosp12/openstack-cinder-volume-dellemc
+  $ docker tag registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc
+  $ docker push 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc
 
 
 Prepare custom environment yaml
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 - Define the customer docker registry.
 
@@ -91,7 +59,7 @@ Prepare custom environment yaml
 
   parameter_defaults:
 
-    DockerCinderVolumeImage: 192.168.139.1:8787/rhosp12/openstack-cinder-volume-dellemc
+    DockerCinderVolumeImage: 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc
     DockerInsecureRegistryAddress:
     - 192.168.139.1:8787
 
@@ -193,4 +161,3 @@ On the controller node, check the output of the Cinder container.
 
   $ tail -f /var/log/containers/cinder/cinder-volume.log
   2018-04-10 02:56:03.386 38 INFO storops.vnx.navi_command [req-ad774477-17d4-4579-8c89-bbcf5755af80 - - - - -] call command: /opt/Navisphere/bin/naviseccli -h 192.168.1.50 -user sysadmin -password *** -scope global -np connection -getport -all
-

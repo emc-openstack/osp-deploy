@@ -2,7 +2,7 @@
 # Using openstack-cinder-volume base image
 # Version 1.1.0
 
-FROM registry.access.redhat.com/rhosp13-beta/openstack-cinder-volume
+FROM registry.access.redhat.com/rhosp13/openstack-cinder-volume
 
 MAINTAINER Dell EMC
 LABEL description="Red Hat OpenStack Platform 13.0 cinder-volume Dell EMC VNX and Unity" \
@@ -10,7 +10,7 @@ LABEL description="Red Hat OpenStack Platform 13.0 cinder-volume Dell EMC VNX an
       name="rhosp13/openstack-cinder-volume-dellemc" \
       vendor="Dell EMC" \
       version="1.1.0" \
-      storops="0.5.8" \
+      storops="0.5.9" \
       naviseccli="7.33.9.1.55"
 
 # Switch to root to install packages
@@ -18,7 +18,7 @@ USER root
 
 # Download and install storops, naviseccli and dependencies
 RUN curl -OL https://raw.githubusercontent.com/emc-openstack/storops/develop/utility/osp_deploy.sh
-RUN sh osp_deploy.sh download 0.5.8
+RUN sh osp_deploy.sh download 0.5.9
 RUN yum localinstall -y newpkgs/*.rpm
 RUN rm -rf newpkgs
 RUN rm -rf osp_deploy.sh

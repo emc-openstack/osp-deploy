@@ -15,7 +15,7 @@ The Dell EMC Manila container image contains following RPM packages:
 
 ### Prerequisites
 
-- RedHat OpenStack Platform 13.
+- Red Hat OpenStack Platform 13.
 - VNX with File version 7.1 or above.
 
 ### Steps
@@ -46,6 +46,25 @@ parameter_defaults:
   ManilaVNXServerContainer: 'server_2'
   ManilaVNXShareDataPools: ''
   ManilaVNXEthernetPorts: 'cge-2-0'
+```
+
+IPv6 is supported by Manila VNX, parameter `ManilaIPv6` is used to enable IPv6:
+
+```yaml
+# This environment file enables Manila with the VNX backend.
+resource_registry:
+  OS::TripleO::Services::ManilaBackendVNX: /usr/share/openstack-tripleo-heat-templates/puppet/services/manila-backend-vnx.yaml
+
+parameter_defaults:
+  ManilaVNXBackendName: tripleo_manila_vnx
+  ManilaVNXDriverHandlesShareServers: true
+  ManilaVNXNasLogin: 'admin'
+  ManilaVNXNasPassword: 'password'
+  ManilaVNXNasServer: 'fd99:f17b:37d0::201'
+  ManilaVNXServerContainer: 'server_2'
+  ManilaVNXShareDataPools: ''
+  ManilaVNXEthernetPorts: 'cge-2-0'
+  ManilaIPv6: true
 ```
 
 For a full detailed instruction of options, please refer to [VNX backend configuration](https://docs.openstack.org/manila/latest/configuration/shared-file-systems/drivers/dell-emc-vnx-driver.html)
@@ -86,7 +105,7 @@ emc_ssl_cert_verify=False
 
 ### Prerequisites
 
-- RedHat OpenStack Platform 13.
+- Red Hat OpenStack Platform 13.
 - Unity with version 4.1 or above.
 
 ### Steps
@@ -95,15 +114,18 @@ emc_ssl_cert_verify=False
 
 The formal Dell EMC container image is published to [Red Hat Container Catalog](https://access.redhat.com/containers/)
 
+Red Hat OpenStack Platform supports remote registry and local registry for overcloud deployment. In this document, we only introduce local registry.
+
 > in below examples, 192.168.139.1:8787 acts as a local registry.
 
-Frist, pull the container image from Red Hat Container Catalog.
+Frist, login registry.connect.redhat.com and pull the container image from Red Hat Container Catalog.
 
 ```bash
+$ docker login -u username -p password registry.connect.redhat.com
 $ docker pull registry.connect.redhat.com/dellemc/openstack-manila-share-dellemc
 ```
 
-Then, tag and push it to the local docker registry if needed.
+Then, tag and push it to the local registry.
 
 ```bash
 $ docker tag registry.connect.redhat.com/dellemc/openstack-manila-share-dellemc 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc
@@ -153,6 +175,27 @@ parameter_defaults:
   ManilaUnityEmcSslCertPath: ''
 ```
 
+IPv6 is supported by Manila Unity, parameter `ManilaIPv6` is used to enable IPv6:
+
+```yaml
+# This environment file enables Manila with the Unity backend.
+resource_registry:
+  OS::TripleO::Services::ManilaBackendUnity: /usr/share/openstack-tripleo-heat-templates/puppet/services/manila-backend-unity.yaml
+
+parameter_defaults:
+  ManilaUnityBackendName: tripleo_manila_unity
+  ManilaUnityDriverHandlesShareServers: true
+  ManilaUnityNasLogin: 'admin'
+  ManilaUnityNasPassword: 'password'
+  ManilaUnityNasServer: 'fd99:f17b:37d0::202'
+  ManilaUnityServerMetaPool: 'pool_1'
+  ManilaUnityShareDataPools: ''
+  ManilaUnityEthernetPorts: ''
+  ManilaUnityEmcSslCertVerify: false
+  ManilaUnityEmcSslCertPath: ''
+  ManilaIPv6: true
+```
+
 For a full detailed instruction of options, please refer to [Unity backend configuration](https://docs.openstack.org/manila/latest/configuration/shared-file-systems/drivers/dell-emc-unity-driver.html)
 
 #### Deploy the configured changes
@@ -189,4 +232,3 @@ unity_ethernet_ports=
 network_plugin_ipv6_enabled=True
 emc_ssl_cert_verify=False
 ```
-

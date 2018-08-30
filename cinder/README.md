@@ -16,7 +16,7 @@ The Dell EMC Cinder container image contains following RPM packages:
 
 ### Prerequisites
 
-- RedHat OpenStack Platform 13.
+- Red Hat OpenStack Platform 13.
 - VNX with Block version 5.32 or above.
 
 ### Steps
@@ -25,15 +25,18 @@ The Dell EMC Cinder container image contains following RPM packages:
 
 The formal Dell EMC container image is published to [Red Hat Container Catalog](https://access.redhat.com/containers/)
 
+Red Hat OpenStack Platform supports remote registry and local registry for overcloud deployment. In this document, we only introduce local registry.
+
 > in below examples, 192.168.139.1:8787 acts as a local registry.
 
-Frist, pull the container image from Red Hat Container Catalog.
+Frist, login registry.connect.redhat.com and pull the container image from Red Hat Container Catalog.
 
 ```bash
+$ docker login -u username -p password registry.connect.redhat.com
 $ docker pull registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc
 ```
 
-Then, tag and push it to the local docker registry.
+Then, tag and push it to the local registry.
 
 ```bash
 $ docker tag registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc
@@ -135,7 +138,7 @@ storage_vnx_security_file_dir=
 
 ### Prerequisites
 
-- RedHat OpenStack Platform 13.
+- Red Hat OpenStack Platform 13.
 - Unity with version 4.1 or above.
 
 ### Steps

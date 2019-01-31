@@ -1,4 +1,4 @@
-# Dell EMC Cinder driver containerization with OSP13
+# Dell EMC Cinder driver containerization with OSP14
 
 ## Overview
 
@@ -16,7 +16,7 @@ The Dell EMC Cinder container image contains following RPM packages:
 
 ### Prerequisites
 
-- Red Hat OpenStack Platform 13.
+- Red Hat OpenStack Platform 14.
 - VNX with Block version 5.32 or above.
 
 ### Steps
@@ -138,7 +138,7 @@ storage_vnx_security_file_dir=
 
 ### Prerequisites
 
-- Red Hat OpenStack Platform 13.
+- Red Hat OpenStack Platform 14.
 - Unity with version 4.1 or above.
 
 ### Steps

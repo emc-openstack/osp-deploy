@@ -1,4 +1,4 @@
-# Dell EMC Manila driver containerization with OSP13
+# Dell EMC Manila driver containerization with OSP14
 
 ## Overview
 
@@ -15,7 +15,7 @@ The Dell EMC Manila container image contains following RPM packages:
 
 ### Prerequisites
 
-- Red Hat OpenStack Platform 13.
+- Red Hat OpenStack Platform 14.
 - VNX with File version 7.1 or above.
 
 ### Steps
@@ -105,7 +105,7 @@ emc_ssl_cert_verify=False
 
 ### Prerequisites
 
-- Red Hat OpenStack Platform 13.
+- Red Hat OpenStack Platform 14.
 - Unity with version 4.1 or above.
 
 ### Steps

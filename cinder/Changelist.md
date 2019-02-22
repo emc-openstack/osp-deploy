@@ -1,5 +1,6 @@
 | Tags | Changes | Build date | Build type |
 | ---- | ------- | ---------- | ---------- |
+| 13.0-4-14 | No changes | 2019-02-05 | Auto |
 | 13.0-4-13 | Base image change from release 65 to 68 | 2019-01-31 | Auto |
 | 13.0-4-12 | No changes | 2019-01-25 | Auto |
 | 13.0-4-11 | Base image change from release 63.1543534127 to 65 | 2019-01-18 | Auto |

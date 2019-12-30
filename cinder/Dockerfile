@@ -17,21 +17,20 @@ LABEL description="Red Hat OpenStack Platform 15.0 cinder-volume Dell EMC VNX an
 # Switch to root to install packages
 USER root
 
-# Download and install storops, naviseccli and dependencies
-RUN curl -OL https://raw.githubusercontent.com/emc-openstack/storops/develop/utility/osp_deploy.sh
-RUN sh osp_deploy.sh download ${storops_version}
-RUN yum localinstall -y newpkgs/*.rpm
-RUN rm -rf newpkgs
-RUN rm -rf osp_deploy.sh
+# Install storops
+RUN pip3 install https://github.com/emc-openstack/storops/archive/r${storops_version}.tar.gz
+RUN rm -rf storops-r${storops_version}.tar.gz
+
+# Install naviseccli
+ARG naviseccli=NaviCLI-Linux-64-x86-en_US-7.33.9.1.55-1.x86_64.rpm
+RUN curl -sSOL https://github.com/emc-openstack/naviseccli/raw/master/${naviseccli}
+RUN yum localinstall -y ${naviseccli}
+RUN rm -rf ${naviseccli}
 
 # Add license info
 RUN curl -OL https://raw.githubusercontent.com/emc-openstack/osp-deploy/master/LICENSE.txt
 RUN mkdir /licenses
 RUN cp LICENSE.txt /licenses/licensing.txt
-
-# Fix rpm verification issue
-# Reference: https://bugzilla.redhat.com/show_bug.cgi?id=1560019
-RUN chmod 0600 /etc/selinux/targeted/active/users_extra
 
 # Switch to cinder user
 USER cinder

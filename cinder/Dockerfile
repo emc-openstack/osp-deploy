@@ -5,8 +5,8 @@ FROM registry.redhat.io/rhosp15-rhel8/openstack-cinder-volume
 
 ARG storops_version=1.2.2
 
-MAINTAINER Dell EMC
-LABEL description="Red Hat OpenStack Platform 15.0 cinder-volume Dell EMC VNX and Unity" \
+LABEL maintainer="Dell EMC" \
+      description="Red Hat OpenStack Platform 15.0 cinder-volume Dell EMC VNX and Unity" \
       summary="Red Hat OpenStack Platform 15.0 cinder-volume Dell EMC VNX and Unity" \
       name="dellemc/openstack-cinder-volume-dellemc-rhosp15" \
       vendor="Dell EMC" \
@@ -17,9 +17,17 @@ LABEL description="Red Hat OpenStack Platform 15.0 cinder-volume Dell EMC VNX an
 # Switch to root to install packages
 USER root
 
+# Keep the version of packages installed via rpm in base image.
+# Then installing storops won't upgrade existing packages.
+RUN pip3 freeze > packages_via_rpm.txt
+
 # Install storops
-RUN pip3 install https://github.com/emc-openstack/storops/archive/r${storops_version}.tar.gz
-RUN rm -rf storops-r${storops_version}.tar.gz
+RUN pip3 install --constraint packages_via_rpm.txt \
+    https://github.com/emc-openstack/storops/archive/r${storops_version}.tar.gz
+
+# Verify storops has compatible dependencies.
+# Image build will fail if storops misses any dependency.
+RUN ! pip3 check | grep storops
 
 # Install naviseccli
 ARG naviseccli=NaviCLI-Linux-64-x86-en_US-7.33.9.1.55-1.x86_64.rpm

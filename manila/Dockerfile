@@ -5,8 +5,8 @@ FROM registry.redhat.io/rhosp15-rhel8/openstack-manila-share
 
 ARG storops_version=1.2.2
 
-MAINTAINER Dell EMC
-LABEL description="Red Hat OpenStack Platform 15.0 manila-share Dell EMC Unity" \
+LABEL maintainer="Dell EMC" \
+      description="Red Hat OpenStack Platform 15.0 manila-share Dell EMC Unity" \
       summary="Red Hat OpenStack Platform 15.0 manila-share Dell EMC Unity" \
       name="dellemc/openstack-manila-share-dellemc-rhosp15" \
       vendor="Dell EMC" \
@@ -16,9 +16,17 @@ LABEL description="Red Hat OpenStack Platform 15.0 manila-share Dell EMC Unity" 
 # Switch to root to install packages
 USER root
 
+# Keep the version of packages installed via rpm in base image.
+# Then installing storops won't upgrade existing packages.
+RUN pip3 freeze > packages_via_rpm.txt
+
 # Install storops
-RUN pip3 install https://github.com/emc-openstack/storops/archive/r${storops_version}.tar.gz
-RUN rm -rf storops-r${storops_version}.tar.gz
+RUN pip3 install --constraint packages_via_rpm.txt \
+    https://github.com/emc-openstack/storops/archive/r${storops_version}.tar.gz
+
+# Verify storops has compatible dependencies.
+# Image build will fail if storops misses any dependency.
+RUN ! pip3 check | grep storops
 
 # Add license info
 RUN curl -OL https://raw.githubusercontent.com/emc-openstack/osp-deploy/master/LICENSE.txt

@@ -17,7 +17,7 @@ LABEL description="Red Hat OpenStack Platform 13.0 cinder-volume Dell EMC VNX an
 USER root
 
 # Download and install storops, naviseccli and dependencies
-RUN curl -OL https://raw.githubusercontent.com/emc-openstack/storops/develop/utility/osp_deploy.sh
+RUN curl -OL https://raw.githubusercontent.com/emc-openstack/storops/master/utility/osp_deploy.sh
 RUN sh osp_deploy.sh download 1.2.3
 RUN yum localinstall -y newpkgs/*.rpm
 RUN rm -rf newpkgs

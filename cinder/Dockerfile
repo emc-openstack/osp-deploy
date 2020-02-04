@@ -1,6 +1,6 @@
 # Cinder driver container for Dell EMC VNX and Unity
 # Using openstack-cinder-volume base image
-# Version 1.1.3
+# Version 1.1.4
 
 FROM registry.access.redhat.com/rhosp13/openstack-cinder-volume
 
@@ -9,12 +9,17 @@ LABEL description="Red Hat OpenStack Platform 13.0 cinder-volume Dell EMC VNX an
       summary="Red Hat OpenStack Platform 13.0 cinder-volume Dell EMC VNX and Unity" \
       name="rhosp13/openstack-cinder-volume-dellemc" \
       vendor="Dell EMC" \
-      version="1.1.3" \
+      version="1.1.4" \
       storops="1.2.3" \
       naviseccli="7.33.9.1.55"
 
 # Switch to root to install packages
 USER root
+
+# Install patched rpm packages
+ADD ./osp13-compressed-vol osp13-compressed-vol
+RUN yum localinstall -y osp13-compressed-vol/*.rpm
+RUN rm -rf osp13-compressed-vol
 
 # Download and install storops, naviseccli and dependencies
 RUN curl -OL https://raw.githubusercontent.com/emc-openstack/storops/master/utility/osp_deploy.sh

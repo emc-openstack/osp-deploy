@@ -3,21 +3,21 @@
 
 FROM registry.access.redhat.com/rhosp14/openstack-manila-share
 
-ARG storops_version=1.0.1
+ARG storops_version=1.2.3
 
 MAINTAINER Dell EMC
 LABEL description="Red Hat OpenStack Platform 14.0 manila-share Dell EMC Unity" \
       summary="Red Hat OpenStack Platform 14.0 manila-share Dell EMC Unity" \
       name="dellemc/openstack-manila-share-dellemc-rhosp14" \
       vendor="Dell EMC" \
-      version="2.0.0" \
+      version="2.0.1" \
       storops=${storops_version}
 
 # Switch to root to install packages
 USER root
 
 # Download and install storops and dependencies
-RUN curl -OL https://raw.githubusercontent.com/emc-openstack/storops/develop/utility/osp_deploy.sh
+RUN curl -OL https://raw.githubusercontent.com/emc-openstack/storops/master/utility/osp_deploy.sh
 RUN sh osp_deploy.sh download ${storops_version}
 RUN yum localinstall -y newpkgs/*.rpm
 RUN rm -rf newpkgs

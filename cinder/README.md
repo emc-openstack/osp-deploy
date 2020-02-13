@@ -1,10 +1,10 @@
-# Dell EMC Cinder driver containerization with OSP15
+# Dell EMC Cinder driver containerization with OSP16
 
 ## Overview
 
 This instruction provides detailed steps on how to enable the containerization of VNX and Unity Cinder driver on top of the OSP Cinder images.
 
-The Dell EMC Cinder container image contains following RPM packages:
+The Dell EMC Cinder container image contains following packages:
 
 - python-storops
 - python-persist-queue
@@ -16,7 +16,7 @@ The Dell EMC Cinder container image contains following RPM packages:
 
 ### Prerequisites
 
-- Red Hat OpenStack Platform 15.
+- Red Hat OpenStack Platform 16.
 - VNX with Block version 5.32 or above.
 
 ### Steps
@@ -27,20 +27,22 @@ The formal Dell EMC container image is published to [Red Hat Container Catalog](
 
 Red Hat OpenStack Platform supports remote registry and local registry for overcloud deployment. In this document, we only introduce local registry.
 
-> in below examples, 192.168.139.1:8787 acts as a local registry.
+> In below examples, 192.168.139.1:8787 acts as a local registry.
+
+**Notes:** We will not introduce how to setup local registry with docker-registry or docker-distribution. In RHOSP16,  undercloud also acts as a local registry, you could push Dell EMC container images to it, and pull these images when deploying overcloud, please refer Red Hat documents.
 
 Frist, login registry.connect.redhat.com and pull the container image from Red Hat Container Catalog.
 
 ```bash
 $ docker login -u username -p password registry.connect.redhat.com
-$ docker pull registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc
+$ docker pull registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc-rhosp16
 ```
 
 Then, tag and push it to the local registry.
 
 ```bash
-$ docker tag registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc
-$ docker push 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc
+$ docker tag registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc-rhosp16  192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp16
+$ docker push 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp16
 ```
 
 #### Prepare custom environment yaml
@@ -51,12 +53,13 @@ Create or edit `/home/stack/templates/custom-dellemc-container.yaml`.
 
 ```yaml
 parameter_defaults:
-  DockerCinderVolumeImage: 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc
+  ContainerCinderVolumeImage: 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp16
   DockerInsecureRegistryAddress:
+  - undercloud.ctlplane.localdomain:8787
   - 192.168.139.1:8787
 ```
 
-Above adds the director local registry IP `192.168.139.1:8787` to the `undercloud`.
+**Notes:** Please add undercloud.ctlplane.localdomain:8787 as parameter of DockerInsecureRegistryAddress, otherwise overcloud will not able to pull images from undercloud.
 
 ##### Prepare environment yaml for backend
 
@@ -72,7 +75,7 @@ Modify backend configuration in `cinder-dellemc-vnx-config.yaml`.
 # A Heat environment file which can be used to enable a
 # Cinder Dell EMC VNX backend, configured via puppet
 resource_registry:
-  OS::TripleO::Services::CinderBackendDellEMCVNX: /usr/share/openstack-tripleo-heat-templates/puppet/services/cinder-backend-dellemc-vnx.yaml
+  OS::TripleO::Services::CinderBackendDellEMCVNX: /usr/share/openstack-tripleo-heat-templates/deployment/cinder/cinder-backend-dellemc-vnx-puppet.yaml
 
 parameter_defaults:
   CinderEnableIscsiBackend: false
@@ -101,13 +104,13 @@ For a full detailed instruction of options, please refer to [VNX backend configu
 
 ```bash
 (undercloud) $ openstack overcloud deploy --templates \
-  -e /home/stack/templates/overcloud_images.yaml \
+  -e /home/stack/templates/containers-prepare-parameter.yaml \
   -e /home/stack/templates/custom-dellemc-container.yaml \
   -e /home/stack/templates/cinder-backend-dellemc-vnx.yaml \
   -e <other templates>
 ```
 
-The sequence of `-e` matters, Make sure the `/home/stack/templates/custom-vnx-container.yaml` appears after the `/home/stack/templates/overcloud_images.yaml`, so that custom VNX container can be used instead of the default one.
+The sequence of `-e` matters, Make sure the `/home/stack/templates/custom-vnx-container.yaml` appears after the `/home/stack/templates/containers-prepare-parameter.yaml`, so that custom VNX container can be used instead of the default one.
 
 #### Verify the configured changes
 
@@ -138,7 +141,7 @@ storage_vnx_security_file_dir=
 
 ### Prerequisites
 
-- Red Hat OpenStack Platform 15.
+- Red Hat OpenStack Platform 16.
 - Unity with version 4.1 or above.
 
 ### Steps
@@ -159,7 +162,7 @@ Modify backend configuration in `cinder-dellemc-unity-config.yaml`.
 # A Heat environment file which can be used to enable a
 # Cinder Dell EMC Unity backend, configured via puppet
 resource_registry:
-  OS::TripleO::Services::CinderBackendDellEMCUnity: /usr/share/openstack-tripleo-heat-templates/puppet/services/cinder-backend-dellemc-unity.yaml
+  OS::TripleO::Services::CinderBackendDellEMCUnity: /usr/share/openstack-tripleo-heat-templates/deployment/cinder/cinder-backend-dellemc-unity-puppet.yaml
 
 parameter_defaults:
   CinderEnableIscsiBackend: false
@@ -183,7 +186,7 @@ For a full detailed instruction of options, please refer to [Unity backend confi
 
 ```bash
 (undercloud) $ openstack overcloud deploy --templates \
-  -e /home/stack/templates/overcloud_images.yaml \
+  -e /home/stack/templates/containers-prepare-parameter.yaml \
   -e /home/stack/templates/custom-dellemc-container.yaml \
   -e /home/stack/templates/cinder-backend-dellemc-unity.yaml \
   -e <other templates>

@@ -1,10 +1,10 @@
-# Dell EMC Manila driver containerization with OSP15
+# Dell EMC Manila driver containerization with OSP16
 
 ## Overview
 
 This instruction provides detailed steps on how to enable the containerization of VNX and Unity Manila driver on top of the OSP Manila images.
 
-The Dell EMC Manila container image contains following RPM packages:
+The Dell EMC Manila container image contains following packages:
 
 - python-storops
 - python-persist-queue
@@ -15,7 +15,7 @@ The Dell EMC Manila container image contains following RPM packages:
 
 ### Prerequisites
 
-- Red Hat OpenStack Platform 15.
+- Red Hat OpenStack Platform 16.
 - VNX with File version 7.1 or above.
 
 ### Steps
@@ -35,7 +35,10 @@ Modify backend configuration in `manila-vnx-config.yaml`.
 ```yaml
 # This environment file enables Manila with the VNX backend.
 resource_registry:
-  OS::TripleO::Services::ManilaBackendVNX: /usr/share/openstack-tripleo-heat-templates/puppet/services/manila-backend-vnx.yaml
+  OS::TripleO::Services::ManilaApi: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-api-container-puppet.yaml
+  OS::TripleO::Services::ManilaScheduler: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-scheduler-container-puppet.yaml
+  OS::TripleO::Services::ManilaShare: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-share-container-puppet.yaml
+  OS::TripleO::Services::ManilaBackendUnity: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-backend-vnx.yaml
 
 parameter_defaults:
   ManilaVNXBackendName: tripleo_manila_vnx
@@ -53,7 +56,10 @@ IPv6 is supported by Manila VNX, parameter `ManilaIPv6` is used to enable IPv6:
 ```yaml
 # This environment file enables Manila with the VNX backend.
 resource_registry:
-  OS::TripleO::Services::ManilaBackendVNX: /usr/share/openstack-tripleo-heat-templates/puppet/services/manila-backend-vnx.yaml
+  OS::TripleO::Services::ManilaApi: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-api-container-puppet.yaml
+  OS::TripleO::Services::ManilaScheduler: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-scheduler-container-puppet.yaml
+  OS::TripleO::Services::ManilaShare: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-share-container-puppet.yaml
+  OS::TripleO::Services::ManilaBackendUnity: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-backend-vnx.yaml
 
 parameter_defaults:
   ManilaVNXBackendName: tripleo_manila_vnx
@@ -73,7 +79,7 @@ For a full detailed instruction of options, please refer to [VNX backend configu
 
 ```bash
 (undercloud) $ openstack overcloud deploy --templates \
-  -e /home/stack/templates/overcloud_images.yaml \
+  -e /home/stack/templates/containers-prepare-parameter.yaml \
   -e /home/stack/templates/manila-vnx-config.yaml \
   -e <other templates>
 ```
@@ -105,7 +111,7 @@ emc_ssl_cert_verify=False
 
 ### Prerequisites
 
-- Red Hat OpenStack Platform 15.
+- Red Hat OpenStack Platform 16.
 - Unity with version 4.1 or above.
 
 ### Steps
@@ -118,18 +124,20 @@ Red Hat OpenStack Platform supports remote registry and local registry for overc
 
 > in below examples, 192.168.139.1:8787 acts as a local registry.
 
+**Notes:** We will not introduce how to setup local registry with docker-registry or docker-distribution. In RHOSP16,  undercloud also acts as a local registry, you could push Dell EMC container images to it, and pull these images when deploying overcloud, please refer Red Hat documents.
+
 Frist, login registry.connect.redhat.com and pull the container image from Red Hat Container Catalog.
 
 ```bash
 $ docker login -u username -p password registry.connect.redhat.com
-$ docker pull registry.connect.redhat.com/dellemc/openstack-manila-share-dellemc
+$ docker pull registry.connect.redhat.com/dellemc/openstack-manila-share-dellemc-rhosp16
 ```
 
 Then, tag and push it to the local registry.
 
 ```bash
-$ docker tag registry.connect.redhat.com/dellemc/openstack-manila-share-dellemc 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc
-$ docker push 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc
+$ docker tag registry.connect.redhat.com/dellemc/openstack-manila-share-dellemc-rhosp16 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc-rhosp16
+$ docker push 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc-rhosp16
 ```
 
 #### Prepare custom environment yaml
@@ -140,12 +148,13 @@ Create or edit `/home/stack/templates/custom-dellemc-container.yaml`.
 
 ```yaml
 parameter_defaults:
-  DockerManilaShareImage: 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc
+  ContainerCinderVolumeImage: 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc-rhosp16
   DockerInsecureRegistryAddress:
+  - undercloud.ctlplane.localdomain:8787
   - 192.168.139.1:8787
 ```
 
-Above adds the director local registry IP `192.168.139.1:8787` to the `undercloud`.
+**Notes:** Please add undercloud.ctlplane.localdomain:8787 as parameter of DockerInsecureRegistryAddress, otherwise overcloud will not able to pull images from undercloud.
 
 ##### Prepare environment yaml for backend
 
@@ -160,7 +169,10 @@ Modify backend configuration in `manila-unity-config.yaml`.
 ```yaml
 # This environment file enables Manila with the Unity backend.
 resource_registry:
-  OS::TripleO::Services::ManilaBackendUnity: /usr/share/openstack-tripleo-heat-templates/puppet/services/manila-backend-unity.yaml
+  OS::TripleO::Services::ManilaApi: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-api-container-puppet.yaml
+  OS::TripleO::Services::ManilaScheduler: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-scheduler-container-puppet.yaml
+  OS::TripleO::Services::ManilaShare: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-share-container-puppet.yaml
+  OS::TripleO::Services::ManilaBackendUnity: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-backend-unity.yaml
 
 parameter_defaults:
   ManilaUnityBackendName: tripleo_manila_unity
@@ -180,7 +192,10 @@ IPv6 is supported by Manila Unity, parameter `ManilaIPv6` is used to enable IPv6
 ```yaml
 # This environment file enables Manila with the Unity backend.
 resource_registry:
-  OS::TripleO::Services::ManilaBackendUnity: /usr/share/openstack-tripleo-heat-templates/puppet/services/manila-backend-unity.yaml
+  OS::TripleO::Services::ManilaApi: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-api-container-puppet.yaml
+  OS::TripleO::Services::ManilaScheduler: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-scheduler-container-puppet.yaml
+  OS::TripleO::Services::ManilaShare: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-share-container-puppet.yaml
+  OS::TripleO::Services::ManilaBackendUnity: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-backend-unity.yaml
 
 parameter_defaults:
   ManilaUnityBackendName: tripleo_manila_unity
@@ -202,13 +217,13 @@ For a full detailed instruction of options, please refer to [Unity backend confi
 
 ```bash
 (undercloud) $ openstack overcloud deploy --templates \
-  -e /home/stack/templates/overcloud_images.yaml \
+  -e /home/stack/templates/containers-prepare-parameter.yaml \
   -e /home/stack/templates/custom-dellemc-container.yaml \
   -e /home/stack/templates/manila-unity-config.yaml \
   -e <other templates>
 ```
 
-The sequence of `-e` matters, Make sure the `/home/stack/templates/custom-vnx-container.yaml` appears after the `/home/stack/templates/overcloud_images.yaml`, so that custom VNX container can be used instead of the default one.
+The sequence of `-e` matters, Make sure the `/home/stack/templates/custom-vnx-container.yaml` appears after the `/home/stack/templates/containers-prepare-parameter.yaml`, so that custom VNX container can be used instead of the default one.
 
 #### Verify the configured changes
 

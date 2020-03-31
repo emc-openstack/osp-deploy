@@ -1,4 +1,3 @@
-| Tags | Changes | Build date | Build type |
-| ---- | ------- | ---------- | ---------- |
-| 14.0-2 | Base image change from release 93 to 94 | 2019-02-22 | Manual |
-| 14.0-1 | Initial version of RHOSP14 | 2019-01-31 | Manual |
+| Tags | Image version | Changes | Build date | Build type |
+| ---- | ------------- | ------- | ---------- | ---------- |
+| 15.0-1-1 | 3.0.0 | Initial version of RHOSP15, storops 1.2.3 | 2020-02-07 | Manual |

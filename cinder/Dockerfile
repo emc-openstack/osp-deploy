@@ -1,37 +1,34 @@
 # Cinder driver container for Dell EMC VNX and Unity
 # Using openstack-cinder-volume base image
 
-FROM registry.access.redhat.com/rhosp14/openstack-cinder-volume
+FROM registry.redhat.io/rhosp15-rhel8/openstack-cinder-volume
 
-ARG storops_version=1.0.1
+ARG storops_version=1.2.3
 
-MAINTAINER Dell EMC
-LABEL description="Red Hat OpenStack Platform 14.0 cinder-volume Dell EMC VNX and Unity" \
-      summary="Red Hat OpenStack Platform 14.0 cinder-volume Dell EMC VNX and Unity" \
-      name="dellemc/openstack-cinder-volume-dellemc-rhosp14" \
+LABEL maintainer="Dell EMC" \
+      description="Red Hat OpenStack Platform 15.0 cinder-volume Dell EMC VNX and Unity" \
+      summary="Red Hat OpenStack Platform 15.0 cinder-volume Dell EMC VNX and Unity" \
+      name="dellemc/openstack-cinder-volume-dellemc-rhosp15" \
       vendor="Dell EMC" \
-      version="2.0.0" \
+      version="3.0.0" \
       storops=${storops_version} \
       naviseccli="7.33.9.1.55"
 
 # Switch to root to install packages
 USER root
 
-# Download and install storops, naviseccli and dependencies
-RUN curl -OL https://raw.githubusercontent.com/emc-openstack/storops/develop/utility/osp_deploy.sh
-RUN sh osp_deploy.sh download ${storops_version}
-RUN yum localinstall -y newpkgs/*.rpm
-RUN rm -rf newpkgs
-RUN rm -rf osp_deploy.sh
+# Install storops
+RUN pip3 install https://github.com/emc-openstack/storops/archive/v${storops_version}.tar.gz
+
+# Install naviseccli
+ARG naviseccli=NaviCLI-Linux-64-x86-en_US-7.33.9.1.55-1.x86_64.rpm
+RUN curl -sSOL https://github.com/emc-openstack/naviseccli/raw/master/${naviseccli}
+RUN yum localinstall -y ${naviseccli}
 
 # Add license info
 RUN curl -OL https://raw.githubusercontent.com/emc-openstack/osp-deploy/master/LICENSE.txt
 RUN mkdir /licenses
 RUN cp LICENSE.txt /licenses/licensing.txt
-
-# Fix rpm verification issue
-# Reference: https://bugzilla.redhat.com/show_bug.cgi?id=1560019
-RUN chmod 0600 /etc/selinux/targeted/active/users_extra
 
 # Switch to cinder user
 USER cinder

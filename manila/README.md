@@ -22,7 +22,7 @@ The Dell EMC Manila container image contains following packages:
 
 Manila VNX driver is not depend on any third party libraries or tools, so there is no need to use Dell EMC customized docker image.
 
-#### Prepare custom environment yaml
+#### 1. Prepare custom environment yaml
 
 Copy VNX configuration template `manila-vnx-config.yaml` from `tripleo-heat-templates`.
 
@@ -75,7 +75,7 @@ parameter_defaults:
 
 For a full detailed instruction of options, please refer to [VNX backend configuration](https://docs.openstack.org/manila/latest/configuration/shared-file-systems/drivers/dell-emc-vnx-driver.html)
 
-#### Deploy the configured changes
+#### 2. Deploy the configured changes
 
 ```bash
 (undercloud) $ openstack overcloud deploy --templates \
@@ -84,7 +84,7 @@ For a full detailed instruction of options, please refer to [VNX backend configu
   -e <other templates>
 ```
 
-#### Verify the configured changes
+#### 3. Verify the configured changes
 
 After the deployment finishes successfully, in the Manila container, the `/etc/manila/manila.conf` should reflect the changes made above.
 
@@ -116,7 +116,7 @@ emc_ssl_cert_verify=False
 
 ### Steps
 
-#### Prepare Dell EMC container
+#### 1. Prepare Dell EMC container
 
 The formal Dell EMC container image is published to [Red Hat Container Catalog](https://access.redhat.com/containers/)
 
@@ -129,20 +129,20 @@ Red Hat OpenStack Platform supports remote registry and local registry for overc
 Frist, login registry.connect.redhat.com and pull the container image from Red Hat Container Catalog.
 
 ```bash
-$ docker login -u username -p password registry.connect.redhat.com
-$ docker pull registry.connect.redhat.com/dellemc/openstack-manila-share-dellemc-rhosp16
+$ podman login -u username -p password registry.connect.redhat.com
+$ podman pull registry.connect.redhat.com/dellemc/openstack-manila-share-dellemc-rhosp16
 ```
 
 Then, tag and push it to the local registry.
 
 ```bash
-$ docker tag registry.connect.redhat.com/dellemc/openstack-manila-share-dellemc-rhosp16 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc-rhosp16
-$ docker push 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc-rhosp16
+$ podman tag registry.connect.redhat.com/dellemc/openstack-manila-share-dellemc-rhosp16 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc-rhosp16
+$ podman push 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc-rhosp16
 ```
 
-#### Prepare custom environment yaml
+#### 2. Prepare custom environment yaml
 
-##### Define the custom docker registry
+##### 2.1 Define the custom docker registry
 
 Create or edit `/home/stack/templates/custom-dellemc-container.yaml`.
 
@@ -156,7 +156,7 @@ parameter_defaults:
 
 **Notes:** Please add undercloud.ctlplane.localdomain:8787 as parameter of DockerInsecureRegistryAddress, otherwise overcloud will not able to pull images from undercloud.
 
-##### Prepare environment yaml for backend
+##### 2.2 Prepare environment yaml for backend
 
 Copy Unity configuration template `manila-unity-config.yaml` from `tripleo-heat-templates`.
 
@@ -213,7 +213,7 @@ parameter_defaults:
 
 For a full detailed instruction of options, please refer to [Unity backend configuration](https://docs.openstack.org/manila/latest/configuration/shared-file-systems/drivers/dell-emc-unity-driver.html)
 
-#### Deploy the configured changes
+#### 3. Deploy the configured changes
 
 ```bash
 (undercloud) $ openstack overcloud deploy --templates \
@@ -225,7 +225,7 @@ For a full detailed instruction of options, please refer to [Unity backend confi
 
 The sequence of `-e` matters, Make sure the `/home/stack/templates/custom-vnx-container.yaml` appears after the `/home/stack/templates/containers-prepare-parameter.yaml`, so that custom VNX container can be used instead of the default one.
 
-#### Verify the configured changes
+#### 4. Verify the configured changes
 
 After the deployment finishes successfully, in the Manila container, the `/etc/manila/manila.conf` should reflect the changes made above.
 

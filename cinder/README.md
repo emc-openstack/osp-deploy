@@ -29,7 +29,7 @@ Red Hat OpenStack Platform supports remote registry and local registry for overc
 
 > In below examples, 192.168.139.1:8787 acts as a local registry.
 
-**Notes:** We will not introduce how to setup local registry with docker-registry or docker-distribution. In RHOSP16,  undercloud also acts as a local registry, you could push Dell EMC container images to it, and pull these images when deploying overcloud, please refer Red Hat document: [4.11. Undercloud container registry](https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/16.0/html/director_installation_and_usage/installing-the-undercloud#undercloud-container-registry).
+**Notes:** We will not introduce how to setup local registry with docker-registry or docker-distribution. In RHOSP16,  undercloud also acts as a local registry, you could push Dell EMC container images to it, and pull these images when deploying overcloud, please refer to Red Hat document: [4.11. Undercloud container registry](https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/16.0/html/director_installation_and_usage/installing-the-undercloud#undercloud-container-registry).
 
 Frist, login registry.connect.redhat.com and pull the container image from Red Hat Container Catalog.
 

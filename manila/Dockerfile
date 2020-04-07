@@ -1,7 +1,7 @@
 # Manila driver container for Dell EMC Unity
 # Using openstack-manila-share base image
 
-FROM registry.redhat.io/rhosp-rhel8/openstack-manila-share:16.0-83
+FROM registry.redhat.io/rhosp-rhel8/openstack-manila-share:16.0-95
 
 ARG storops_version=1.2.3
 

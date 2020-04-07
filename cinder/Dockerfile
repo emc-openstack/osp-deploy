@@ -1,7 +1,7 @@
-# Cinder driver container for Dell EMC VNX and Unity
+  # Cinder driver container for Dell EMC VNX and Unity
 # Using openstack-cinder-volume base image
 
-FROM registry.redhat.io/rhosp-rhel8/openstack-cinder-volume:16.0-80
+FROM registry.redhat.io/rhosp-rhel8/openstack-cinder-volume:16.0-90
 
 ARG storops_version=1.2.3
 

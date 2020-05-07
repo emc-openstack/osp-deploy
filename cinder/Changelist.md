@@ -1,5 +1,6 @@
 | Tags | Image version | Changes | Build date | Build type |
 | ---- | ------------- | ------- | ---------- | ---------- |
+| 13.0-4-35 | 1.1.3 | Base image change to 118 | 2020-05-07 | Manual |
 | 13.0-4-34 | 1.1.3 | Base image change to 112 | 2020-03-12 | Manual |
 | 13.0-4-33 | NA | Dismiss this build because it was built using rpm. It was a wrong build way. | 2020-01-31 | Manual |
 | 13.0-4-32 | 1.1.3 | Upgrade storops from 1.0.1 to 1.2.3 | 2020-01-13 | Manual |

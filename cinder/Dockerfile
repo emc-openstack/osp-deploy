@@ -10,7 +10,7 @@ LABEL maintainer="Dell EMC" \
       summary="Red Hat OpenStack Platform 16.0 cinder-volume Dell EMC VNX and Unity" \
       name="dellemc/openstack-cinder-volume-dellemc-rhosp16" \
       vendor="Dell EMC" \
-      version="4.0.0" \
+      version="4.1.0" \
       storops=${storops_version} \
       naviseccli="7.33.9.1.55"
 

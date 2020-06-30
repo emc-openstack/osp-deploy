@@ -1,4 +1,4 @@
-# Dell EMC Cinder driver containerization with OSP16
+# Dell EMC Unity and VNX Cinder driver containerization with OSP16
 
 ## Overview
 
@@ -71,6 +71,13 @@ cp /usr/share/openstack-tripleo-heat-templates/environments/cinder-dellemc-vnx-c
 
 Modify backend configuration in `cinder-dellemc-vnx-config.yaml`.
 
+Note: **LVM driver** is enabled by default in TripleO, you want to set the ```CinderEnableIscsiBackend``` to false in one of your environment file to turn it off.
+
+```yaml
+parameter_defaults:
+  CinderEnableIscsiBackend: false
+```
+
 ```yaml
 # A Heat environment file which can be used to enable a
 # Cinder Dell EMC VNX backend, configured via puppet
@@ -78,11 +85,6 @@ resource_registry:
   OS::TripleO::Services::CinderBackendDellEMCVNX: /usr/share/openstack-tripleo-heat-templates/deployment/cinder/cinder-backend-dellemc-vnx-puppet.yaml
 
 parameter_defaults:
-  CinderEnableIscsiBackend: false
-  CinderEnableRbdBackend: false
-  CinderEnableNfsBackend: false
-  NovaEnableRbdBackend: false
-  GlanceBackend: file
   CinderEnableDellEMCVNXBackend: true
   CinderDellEMCVNXBackendName: 'tripleo_dellemc_vnx'
   CinderDellEMCVNXSanIp: '192.168.1.50'
@@ -106,8 +108,8 @@ For a full detailed instruction of options, please refer to [VNX backend configu
 (undercloud) $ openstack overcloud deploy --templates \
   -e /home/stack/templates/containers-prepare-parameter.yaml \
   -e /home/stack/templates/custom-dellemc-container.yaml \
-  -e /home/stack/templates/cinder-backend-dellemc-vnx.yaml \
-  -e <other templates>
+  -e <other templates> \
+  -e /home/stack/templates/cinder-backend-dellemc-vnx.yaml
 ```
 
 The sequence of `-e` matters, Make sure the `/home/stack/templates/custom-vnx-container.yaml` appears after the `/home/stack/templates/containers-prepare-parameter.yaml`, so that custom VNX container can be used instead of the default one.
@@ -158,6 +160,13 @@ cp /usr/share/openstack-tripleo-heat-templates/environments/cinder-dellemc-unity
 
 Modify backend configuration in `cinder-dellemc-unity-config.yaml`.
 
+Note: **LVM driver** is enabled by default in TripleO, you want to set the ```CinderEnableIscsiBackend``` to false in one of your environment file to turn it off.
+
+```yaml
+parameter_defaults:
+  CinderEnableIscsiBackend: false
+```
+
 ```yaml
 # A Heat environment file which can be used to enable a
 # Cinder Dell EMC Unity backend, configured via puppet
@@ -165,11 +174,6 @@ resource_registry:
   OS::TripleO::Services::CinderBackendDellEMCUnity: /usr/share/openstack-tripleo-heat-templates/deployment/cinder/cinder-backend-dellemc-unity-puppet.yaml
 
 parameter_defaults:
-  CinderEnableIscsiBackend: false
-  CinderEnableRbdBackend: false
-  CinderEnableNfsBackend: false
-  NovaEnableRbdBackend: false
-  GlanceBackend: file
   CinderEnableDellEMCUnityBackend: true
   CinderDellEMCUnityBackendName: 'tripleo_dellemc_unity'
   CinderDellEMCUnitySanIp: '192.168.1.50'
@@ -188,8 +192,8 @@ For a full detailed instruction of options, please refer to [Unity backend confi
 (undercloud) $ openstack overcloud deploy --templates \
   -e /home/stack/templates/containers-prepare-parameter.yaml \
   -e /home/stack/templates/custom-dellemc-container.yaml \
-  -e /home/stack/templates/cinder-backend-dellemc-unity.yaml \
-  -e <other templates>
+  -e <other templates> \
+  -e /home/stack/templates/cinder-backend-dellemc-unity.yaml
 ```
 
 #### 3. Verify the configured changes
@@ -214,9 +218,26 @@ unity_storage_pool_names=
 
 ## Multiple Back-ends
 
-`cinder-dellemc-unity-config.yaml` and `cinder-dellemc-vnx-config.yaml` couldn't use to configure multiple backends.
+To configure multiple backends of two different storage types you can combine pass both environment files on the same deploy command as below.
 
-In order to configure multiple back-ends, we could use `ControllerExtraConfig` to set the configurations for all backends directly.
+`cinder-dellemc-unity-config.yaml` and `cinder-dellemc-vnx-config.yaml` can be used to configure both unity and vnx as multi-backends.
+
+```bash
+(undercloud) $ openstack overcloud deploy --templates \
+  -e /home/stack/templates/containers-prepare-parameter.yaml \
+  -e /home/stack/templates/custom-dellemc-container.yaml \
+  -e <other templates> \
+  -e /home/stack/templates/cinder-backend-dellemc-vnx.yaml \
+  -e /home/stack/templates/cinder-backend-dellemc-unity.yaml
+```
+
+ 
+## Multiple Back-ends of the same storage backend 
+
+`cinder-dellemc-unity-config.yaml` and `cinder-dellemc-vnx-config.yaml` cannot be used to configure multiple instances of the
+same storage backend.
+
+In order to configure multiple back-ends of same storage, we could use `ControllerExtraConfig` to set the configurations for all backends directly.
 
 This is an example to enable 4 backends.
 
@@ -225,6 +246,12 @@ This is an example to enable 4 backends.
 #### 1. Prepare environment yaml for custom docker registry and multiple backends
 
 Create or edit `/home/stack/templates/custom-dellemc-container.yaml`.
+
+Note: **LVM driver** is enabled by default in TripleO, you want to set the ```CinderEnableIscsiBackend``` to false in one of your environment file to turn it off.
+```yaml
+parameter_defaults:
+  CinderEnableIscsiBackend: false
+```
 
 ```yaml
 parameter_defaults:
@@ -392,6 +419,6 @@ parameter_defaults:
 ```bash
 (undercloud) $ openstack overcloud deploy --templates \
   -e /home/stack/templates/containers-prepare-parameter.yaml \
-  -e /home/stack/templates/custom-dellemc-container.yaml \
-  -e <other templates>
+  -e <other templates> \
+  -e /home/stack/templates/custom-dellemc-container.yaml 
 ```

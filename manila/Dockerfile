@@ -1,7 +1,7 @@
 # Manila driver container for Dell EMC Unity
 # Using openstack-manila-share base image
 
-FROM registry.redhat.io/rhosp-rhel8/openstack-manila-share:16.0
+FROM registry.redhat.io/rhosp-rhel8/openstack-manila-share:16.1
 
 ARG storops_version=1.2.5
 
@@ -10,7 +10,7 @@ LABEL maintainer="Dell EMC" \
       summary="Red Hat OpenStack Platform 16.0 manila-share Dell EMC Unity" \
       name="dellemc/openstack-manila-share-dellemc-rhosp16" \
       vendor="Dell EMC" \
-      version="4.1.1" \
+      version="4.2.0" \
       storops=${storops_version}
 
 # Switch to root to install packages

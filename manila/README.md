@@ -38,7 +38,7 @@ resource_registry:
   OS::TripleO::Services::ManilaApi: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-api-container-puppet.yaml
   OS::TripleO::Services::ManilaScheduler: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-scheduler-container-puppet.yaml
   OS::TripleO::Services::ManilaShare: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-share-container-puppet.yaml
-  OS::TripleO::Services::ManilaBackendUnity: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-backend-vnx.yaml
+  OS::TripleO::Services::ManilaBackendVNX: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-backend-vnx.yaml
 
 parameter_defaults:
   ManilaVNXBackendName: tripleo_manila_vnx
@@ -59,7 +59,7 @@ resource_registry:
   OS::TripleO::Services::ManilaApi: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-api-container-puppet.yaml
   OS::TripleO::Services::ManilaScheduler: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-scheduler-container-puppet.yaml
   OS::TripleO::Services::ManilaShare: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-share-container-puppet.yaml
-  OS::TripleO::Services::ManilaBackendUnity: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-backend-vnx.yaml
+  OS::TripleO::Services::ManilaBackendVNX: /usr/share/openstack-tripleo-heat-templates/deployment/manila/manila-backend-vnx.yaml
 
 parameter_defaults:
   ManilaVNXBackendName: tripleo_manila_vnx

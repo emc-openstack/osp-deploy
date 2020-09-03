@@ -3,14 +3,14 @@
 
 FROM registry.redhat.io/rhosp-rhel8/openstack-cinder-volume:16.1
 
-ARG storops_version=1.2.5
+ARG storops_version=1.2.7
 
 LABEL maintainer="Dell EMC" \
-      description="Red Hat OpenStack Platform 16.0 cinder-volume Dell EMC VNX and Unity" \
-      summary="Red Hat OpenStack Platform 16.0 cinder-volume Dell EMC VNX and Unity" \
+      description="Red Hat OpenStack Platform 16.1 cinder-volume Dell EMC VNX and Unity" \
+      summary="Red Hat OpenStack Platform 16.1 cinder-volume Dell EMC VNX and Unity" \
       name="dellemc/openstack-cinder-volume-dellemc-rhosp16" \
       vendor="Dell EMC" \
-      version="4.2.0" \
+      version="4.2.1" \
       storops=${storops_version} \
       naviseccli="7.33.9.1.55"
 

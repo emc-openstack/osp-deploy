@@ -3,14 +3,14 @@
 
 FROM registry.redhat.io/rhosp-rhel8/openstack-manila-share:16.0
 
-ARG storops_version=1.2.5
+ARG storops_version=1.2.7
 
 LABEL maintainer="Dell EMC" \
       description="Red Hat OpenStack Platform 16.0 manila-share Dell EMC Unity" \
       summary="Red Hat OpenStack Platform 16.0 manila-share Dell EMC Unity" \
       name="dellemc/openstack-manila-share-dellemc-rhosp16" \
       vendor="Dell EMC" \
-      version="4.1.1" \
+      version="4.1.2" \
       storops=${storops_version}
 
 # Switch to root to install packages

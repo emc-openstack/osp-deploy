@@ -1,7 +1,7 @@
 # Cinder driver container for Dell EMC VNX and Unity
 # Using openstack-cinder-volume base image
 
-FROM registry.redhat.io/rhosp-rhel8/openstack-cinder-volume:16.1
+FROM registry.redhat.io/rhosp-rhel8/openstack-cinder-volume:16.1.2
 
 ARG storops_version=1.2.7
 
@@ -10,7 +10,7 @@ LABEL maintainer="Dell EMC" \
       summary="Red Hat OpenStack Platform 16.1 cinder-volume Dell EMC VNX and Unity" \
       name="dellemc/openstack-cinder-volume-dellemc-rhosp16" \
       vendor="Dell EMC" \
-      version="4.2.1" \
+      version="4.3.0" \
       storops=${storops_version} \
       naviseccli="7.33.9.1.55"
 

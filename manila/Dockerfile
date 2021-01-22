@@ -10,7 +10,7 @@ LABEL maintainer="Dell EMC" \
       summary="Red Hat OpenStack Platform 16.1 manila-share Dell EMC Unity" \
       name="dellemc/openstack-manila-share-dellemc-rhosp16" \
       vendor="Dell EMC" \
-      version="4.2.1" \
+      version="4.2.2" \
       storops=${storops_version}
 
 # Switch to root to install packages
@@ -18,6 +18,9 @@ USER root
 
 # Install storops
 RUN pip3 install https://github.com/emc-openstack/storops/archive/v${storops_version}.tar.gz
+
+# Update necessary packages according to Redhat support's advice
+RUN yum -y update-minimal --security --sec-severity=Important --sec-severity=Critical
 
 # Add license info
 RUN curl -OL https://raw.githubusercontent.com/emc-openstack/osp-deploy/master/LICENSE.txt

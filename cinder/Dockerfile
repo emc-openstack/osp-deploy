@@ -10,7 +10,7 @@ LABEL maintainer="Dell EMC" \
       summary="Red Hat OpenStack Platform 16.1 cinder-volume Dell EMC VNX and Unity" \
       name="dellemc/openstack-cinder-volume-dellemc-rhosp16" \
       vendor="Dell EMC" \
-      version="4.2.1" \
+      version="4.2.2" \
       storops=${storops_version} \
       naviseccli="7.33.9.1.55"
 
@@ -24,6 +24,9 @@ RUN pip3 install https://github.com/emc-openstack/storops/archive/v${storops_ver
 ARG naviseccli=NaviCLI-Linux-64-x86-en_US-7.33.9.1.55-1.x86_64.rpm
 RUN curl -sSOL https://github.com/emc-openstack/naviseccli/raw/master/${naviseccli}
 RUN yum localinstall -y ${naviseccli}
+
+# Update necessary packages according to Redhat support's advice
+RUN yum -y update-minimal --security --sec-severity=Important --sec-severity=Critical
 
 # Add license info
 RUN curl -OL https://raw.githubusercontent.com/emc-openstack/osp-deploy/master/LICENSE.txt

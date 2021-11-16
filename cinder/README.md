@@ -42,7 +42,7 @@ Then, tag and push it to the local registry.
 
 ```bash
 $ podman tag registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc-rhosp16 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp16
-$ podman push 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp16
+$ sudo openstack tripleo container image push --local 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp16
 ```
 
 #### 2. Prepare custom environment yaml
@@ -231,8 +231,8 @@ To configure multiple backends of two different storage types you can combine pa
   -e /home/stack/templates/cinder-backend-dellemc-unity.yaml
 ```
 
- 
-## Multiple Back-ends of the same storage backend 
+
+## Multiple Back-ends of the same storage backend
 
 `cinder-dellemc-unity-config.yaml` and `cinder-dellemc-vnx-config.yaml` cannot be used to configure multiple instances of the
 same storage backend.
@@ -420,5 +420,5 @@ parameter_defaults:
 (undercloud) $ openstack overcloud deploy --templates \
   -e /home/stack/templates/containers-prepare-parameter.yaml \
   -e <other templates> \
-  -e /home/stack/templates/custom-dellemc-container.yaml 
+  -e /home/stack/templates/custom-dellemc-container.yaml
 ```

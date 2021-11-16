@@ -137,7 +137,7 @@ Then, tag and push it to the local registry.
 
 ```bash
 $ podman tag registry.connect.redhat.com/dellemc/openstack-manila-share-dellemc-rhosp16 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc-rhosp16
-$ podman push 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc-rhosp16
+$ sudo openstack tripleo container image push --local 192.168.139.1:8787/dellemc/openstack-manila-share-dellemc-rhosp16
 ```
 
 #### 2. Prepare custom environment yaml

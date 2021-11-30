@@ -10,7 +10,7 @@ LABEL maintainer="Dell EMC" \
       summary="Red Hat OpenStack Platform 16.1 manila-share Dell EMC Unity" \
       name="dellemc/openstack-manila-share-dellemc-rhosp16" \
       vendor="Dell EMC" \
-      version="4.2.2" \
+      version="4.2.3" \
       storops=${storops_version}
 
 # Switch to root to install packages

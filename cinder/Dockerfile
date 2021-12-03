@@ -10,7 +10,7 @@ LABEL maintainer="Dell EMC" \
       summary="Red Hat OpenStack Platform 16.1 cinder-volume Dell EMC VNX and Unity" \
       name="dellemc/openstack-cinder-volume-dellemc-rhosp16" \
       vendor="Dell EMC" \
-      version="4.2.2" \
+      version="4.2.3" \
       storops=${storops_version} \
       naviseccli="7.33.9.1.55"
 
@@ -19,6 +19,11 @@ USER root
 
 # Install storops
 RUN pip3 install https://github.com/emc-openstack/storops/archive/v${storops_version}.tar.gz
+
+# libnsl needed by naviseccli has no longer provided by base image, need to install it
+ARG libnsl=libnsl-2.28-101.el8.x86_64.rpm
+RUN curl -sSOL https://github.com/emc-openstack/naviseccli/raw/master/${libnsl}
+RUN yum localinstall -y ${libnsl}
 
 # Install naviseccli
 ARG naviseccli=NaviCLI-Linux-64-x86-en_US-7.33.9.1.55-1.x86_64.rpm

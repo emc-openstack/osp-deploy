@@ -1,8 +1,8 @@
-# Dell EMC Unity and VNX Cinder driver containerization with OSP16
+# Dell EMC Unity Cinder driver containerization with OSP17
 
 ## Overview
 
-This instruction provides detailed steps on how to enable the containerization of VNX and Unity Cinder driver on top of the OSP Cinder images.
+This instruction provides detailed steps on how to enable the containerization of Unity Cinder driver on top of the OSP Cinder images.
 
 The Dell EMC Cinder container image contains following packages:
 
@@ -12,12 +12,12 @@ The Dell EMC Cinder container image contains following packages:
 - python-retryz
 - Dell EMC Naviseccli
 
-## VNX deployment
+## Unity deployment
 
 ### Prerequisites
 
-- Red Hat OpenStack Platform 16.
-- VNX with Block version 5.32 or above.
+- Red Hat OpenStack Platform 17.
+- Unity with version 4.1 or above.
 
 ### Steps
 
@@ -29,20 +29,20 @@ Red Hat OpenStack Platform supports remote registry and local registry for overc
 
 > In below examples, 192.168.139.1:8787 acts as a local registry.
 
-**Notes:** We will not introduce how to setup local registry with docker-registry or docker-distribution. In RHOSP16,  undercloud also acts as a local registry, you could push Dell EMC container images to it, and pull these images when deploying overcloud, please refer to Red Hat document: [4.11. Undercloud container registry](https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/16.2/html/director_installation_and_usage/installing-the-undercloud#undercloud-container-registry).
+**Notes:** We will not introduce how to setup local registry. In RHOSP17,  undercloud also acts as a local registry, you could push Dell EMC container images to it, and pull these images when deploying overcloud, please refer to Red Hat document: [7.11. Undercloud container registry](https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/17.1/html/installing_and_managing_red_hat_openstack_platform_with_director/assembly_installing-director-on-the-undercloud#con_undercloud-container-registry_installing-director-on-the-undercloud).
 
 Frist, login registry.connect.redhat.com and pull the container image from Red Hat Container Catalog.
 
 ```bash
 $ podman login -u username -p password registry.connect.redhat.com
-$ podman pull registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc-rhosp16
+$ podman pull registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc-rhosp17
 ```
 
 Then, tag and push it to the local registry.
 
 ```bash
-$ podman tag registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc-rhosp16 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp16
-$ sudo openstack tripleo container image push --local 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp16
+$ podman tag registry.connect.redhat.com/dellemc/openstack-cinder-volume-dellemc-rhosp17 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp17
+$ sudo openstack tripleo container image push --local 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp17
 ```
 
 #### 2. Prepare custom environment yaml
@@ -53,7 +53,7 @@ Create or edit `/home/stack/templates/custom-dellemc-container.yaml`.
 
 ```yaml
 parameter_defaults:
-  ContainerCinderVolumeImage: 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp16
+  ContainerCinderVolumeImage: 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp17
   DockerInsecureRegistryAddress:
   - undercloud.ctlplane.localdomain:8787
   - 192.168.139.1:8787
@@ -62,95 +62,6 @@ parameter_defaults:
 **Notes:** Please add undercloud.ctlplane.localdomain:8787 as parameter of DockerInsecureRegistryAddress, otherwise overcloud will not able to pull images from undercloud.
 
 ##### 2.2 Prepare environment yaml for backend
-
-Copy VNX configuration template `cinder-dellemc-vnx-config.yaml` from `tripleo-heat-templates`.
-
-```bash
-cp /usr/share/openstack-tripleo-heat-templates/environments/cinder-dellemc-vnx-config.yaml /home/stack/templates/
-```
-
-Modify backend configuration in `cinder-dellemc-vnx-config.yaml`.
-
-Note: **LVM driver** is enabled by default in TripleO, you want to set the ```CinderEnableIscsiBackend``` to false in one of your environment file to turn it off.
-
-```yaml
-parameter_defaults:
-  CinderEnableIscsiBackend: false
-```
-
-```yaml
-# A Heat environment file which can be used to enable a
-# Cinder Dell EMC VNX backend, configured via puppet
-resource_registry:
-  OS::TripleO::Services::CinderBackendDellEMCVNX: /usr/share/openstack-tripleo-heat-templates/deployment/cinder/cinder-backend-dellemc-vnx-puppet.yaml
-
-parameter_defaults:
-  CinderEnableDellEMCVNXBackend: true
-  CinderDellEMCVNXBackendName: 'tripleo_dellemc_vnx'
-  CinderDellEMCVNXSanIp: '192.168.1.50'
-  CinderDellEMCVNXSanLogin: 'admin'
-  CinderDellEMCVNXSanPassword: 'password'
-  CinderDellEMCVNXStorageProtocol: 'iscsi'
-  CinderDellEMCVNXStoragePoolName: ''
-  CinderDellEMCVNXDefaultTimeout: 3600
-  CinderDellEMCVNXMaxLunsPerStorageGroup: 255
-  CinderDellEMCVNXInitiatorAutoRegistration: 'true'
-  CinderDellEMCVNXAuthType: 'global'
-  CinderDellEMCVNXStorageSecurityFileDir: ''
-  CinderDellEMCVNXNaviSecCliPath: '/opt/Navisphere/bin/naviseccli'
-```
-
-For a full detailed instruction of options, please refer to [VNX backend configuration](https://docs.openstack.org/cinder/latest/configuration/block-storage/drivers/dell-emc-vnx-driver.html)
-
-#### 3. Deploy the configured changes
-
-```bash
-(undercloud) $ openstack overcloud deploy --templates \
-  -e /home/stack/templates/containers-prepare-parameter.yaml \
-  -e /home/stack/templates/custom-dellemc-container.yaml \
-  -e <other templates> \
-  -e /home/stack/templates/cinder-backend-dellemc-vnx.yaml
-```
-
-The sequence of `-e` matters, Make sure the `/home/stack/templates/custom-vnx-container.yaml` appears after the `/home/stack/templates/containers-prepare-parameter.yaml`, so that custom VNX container can be used instead of the default one.
-
-#### 4. Verify the configured changes
-
-After the deployment finishes successfully, in the Cinder container, the `/etc/cinder/cinder.conf` should reflect the changes made above.
-
-```ini
-[DEFAULT]
-...
-enabled_backends=tripleo_dellemc_vnx
-...
-[tripleo_dellemc_vnx]
-default_timeout=3600
-max_luns_per_storage_group=255
-naviseccli_path=/opt/Navisphere/bin/naviseccli
-san_ip=192.168.1.50
-san_login=admin
-san_password=password
-storage_vnx_pool_names=
-volume_backend_name=tripleo_dellemc_vnx
-volume_driver=cinder.volume.drivers.dell_emc.vnx.driver.VNXDriver
-storage_protocol=iscsi
-initiator_auto_registration=True
-storage_vnx_authentication_type=global
-storage_vnx_security_file_dir=
-```
-
-## Unity deployment
-
-### Prerequisites
-
-- Red Hat OpenStack Platform 16.
-- Unity with version 4.1 or above.
-
-### Steps
-
-Unity is almost same as VNX, the only difference is you need to prepare Unity specific yaml.
-
-#### 1. Prepare environment yaml for backend
 
 Copy Unity configuration template `cinder-dellemc-unity-config.yaml` from `tripleo-heat-templates`.
 
@@ -186,7 +97,7 @@ parameter_defaults:
 
 For a full detailed instruction of options, please refer to [Unity backend configuration](https://docs.openstack.org/cinder/latest/configuration/block-storage/drivers/dell-emc-unity-driver.html)
 
-#### 2. Deploy the configured changes
+#### 3. Deploy the configured changes
 
 ```bash
 (undercloud) $ openstack overcloud deploy --templates \
@@ -196,7 +107,7 @@ For a full detailed instruction of options, please refer to [Unity backend confi
   -e /home/stack/templates/cinder-backend-dellemc-unity.yaml
 ```
 
-#### 3. Verify the configured changes
+#### 4. Verify the configured changes
 
 After the deployment finishes successfully, in the Cinder container, the `/etc/cinder/cinder.conf` should reflect the changes made above.
 
@@ -255,7 +166,7 @@ parameter_defaults:
 
 ```yaml
 parameter_defaults:
-  ContainerCinderVolumeImage: 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp16
+  ContainerCinderVolumeImage: 192.168.139.1:8787/dellemc/openstack-cinder-volume-dellemc-rhosp17
   DockerInsecureRegistryAddress:
   - undercloud.ctlplane.localdomain:8787
   - 192.168.139.1:8787

@@ -7,10 +7,6 @@ This instruction provides detailed steps on how to enable the containerization o
 The Dell EMC Cinder container image contains following packages:
 
 - python-storops
-- python-persist-queue
-- python-cachez
-- python-retryz
-- Dell EMC Naviseccli
 
 ## Unity deployment
 

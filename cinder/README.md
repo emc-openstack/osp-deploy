@@ -125,23 +125,23 @@ unity_storage_pool_names=
 
 ## Multiple Back-ends
 
-To configure multiple backends of two different storage types you can combine pass both environment files on the same deploy command as below.
+To configure multiple backends of two different storage types you can combine pass more than one environment files on the same deploy command as below.
 
-`cinder-dellemc-unity-config.yaml` and `cinder-dellemc-vnx-config.yaml` can be used to configure both unity and vnx as multi-backends.
+`cinder-dellemc-unity-config.yaml` and `cinder-xxx-config.yaml` can be used to configure unity and another storage system as multi-backends.
 
 ```bash
 (undercloud) $ openstack overcloud deploy --templates \
   -e /home/stack/templates/containers-prepare-parameter.yaml \
   -e /home/stack/templates/custom-dellemc-container.yaml \
   -e <other templates> \
-  -e /home/stack/templates/cinder-backend-dellemc-vnx.yaml \
+  -e /home/stack/templates/cinder-backend-xxx.yaml \
   -e /home/stack/templates/cinder-backend-dellemc-unity.yaml
 ```
 
 
 ## Multiple Back-ends of the same storage backend
 
-`cinder-dellemc-unity-config.yaml` and `cinder-dellemc-vnx-config.yaml` cannot be used to configure multiple instances of the
+`cinder-dellemc-unity-config.yaml` and `cinder-xxx-config.yaml` cannot be used to configure multiple instances of the
 same storage backend.
 
 In order to configure multiple back-ends of same storage, we could use `ControllerExtraConfig` to set the configurations for all backends directly.
@@ -169,7 +169,7 @@ parameter_defaults:
 
   ControllerExtraConfig:
     # in this exapmle, we enable 4 backends
-    cinder_user_enabled_backends: ['unity_fc', 'unity_iscsi', 'vnx_fc', 'vnx_iscsi']
+    cinder_user_enabled_backends: ['unity_fc', 'unity_iscsi']
     cinder::config::cinder_config:
       unity_fc/volume_driver:
         value: cinder.volume.drivers.dell_emc.unity.driver.UnityDriver
@@ -225,100 +225,6 @@ parameter_defaults:
         value: True
       unity_iscsi/suppress_requests_ssl_warnings:
         value: True
-      vnx_fc/volume_driver:
-        value: cinder.volume.drivers.dell_emc.vnx.driver.VNXDriver
-      vnx_fc/volume_backend_name:
-        value: vnx_fc
-      vnx_fc/san_ip:
-        value: <vnx array sp ip>
-      vnx_fc/san_login:
-        value: xxxxx
-      vnx_fc/san_password:
-        value: xxxxx
-      vnx_fc/storage_protocol:
-        value: FC
-      vnx_fc/unity_storage_pool_names:
-        value: pool1
-      vnx_fc/default_timeout:
-        value: 20
-      vnx_fc/use_multipath_for_image_xfer:
-        value: True
-      vnx_fc/enforce_multipath_for_image_xfer:
-        value: True
-      vnx_fc/force_delete_lun_in_storagegroup:
-        value: True
-      vnx_fc/ignore_pool_full_threshold:
-        value: True
-      vnx_fc/image_volume_cache_enabled:
-        value: True
-      vnx_fc/initiator_auto_registration:
-        value: True
-      vnx_fc/force_delete_lun_in_storagegroup:
-        value: True
-      vnx_fc/vnx_async_migrate:
-        value: False
-      vnx_fc/destroy_empty_storage_group:
-        value: False
-      vnx_fc/num_volume_device_scan_tries:
-        value: 10
-      vnx_fc/naviseccli_path:
-        value: /opt/Navisphere/bin/naviseccli
-      vnx_fc/driver_use_ssl:
-        value: True
-      vnx_fc/driver_ssl_cert_verify:
-        value: True
-      vnx_fc/driver_ssl_cert_path:
-        value: <path to cert>
-      vnx_fc/suppress_requests_ssl_warnings:
-        value: True
-      vnx_iscsi/volume_driver:
-        value: cinder.volume.drivers.dell_emc.vnx.driver.VNXDriver
-      vnx_iscsi/volume_backend_name:
-        value: vnx_iscsi
-      vnx_iscsi/san_ip:
-        value: <vnx array sp ip>
-      vnx_iscsi/san_login:
-        value: xxxxx
-      vnx_iscsi/san_password:
-        value: xxxx
-      vnx_iscsi/storage_protocol:
-        value: iSCSI
-      vnx_iscsi/unity_storage_pool_names:
-        value: pool1
-      vnx_iscsi/default_timeout:
-        value: 20
-      vnx_iscsi/use_multipath_for_image_xfer:
-        value: True
-      vnx_iscsi/enforce_multipath_for_image_xfer:
-        value: True
-      vnx_iscsi/force_delete_lun_in_storagegroup:
-        value: True
-      vnx_iscsi/ignore_pool_full_threshold:
-        value: True
-      vnx_iscsi/image_volume_cache_enabled:
-        value: True
-      vnx_iscsi/initiator_auto_registration:
-        value: True
-      vnx_iscsi/force_delete_lun_in_storagegroup:
-        value: True
-      vnx_iscsi/vnx_async_migrate:
-        value: False
-      vnx_iscsi/destroy_empty_storage_group:
-        value: False
-      vnx_iscsi/suppress_requests_ssl_warnings:
-        value: True
-      vnx_iscsi/num_volume_device_scan_tries:
-        value: 10
-      vnx_iscsi/naviseccli_path:
-        value: /opt/Navisphere/bin/naviseccli
-      vnx_iscsi/driver_use_ssl:
-        value: True
-      vnx_iscsi/driver_ssl_cert_verify:
-        value: True
-      vnx_iscsi/driver_ssl_cert_path:
-        value: <path to cert file>
-      vnx_iscsi/io_port_list:
-        value: ['a-5-0','b-5-0']
 ```
 
 #### 2. Deploy the configured changes
